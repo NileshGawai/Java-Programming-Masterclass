@@ -1,0 +1,1 @@
+Place a suitable 'MySQL JDBC Connector' jar file here.
