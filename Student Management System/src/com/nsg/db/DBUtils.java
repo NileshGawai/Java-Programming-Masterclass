@@ -25,16 +25,15 @@ public class DBUtils {
      * Gets the MySQL Server database connection.
      *
      * @return Connection object.
-     * @throws java.sql.SQLException SQLException
      */
-    public static Connection getConnection() throws SQLException {
+    public static Connection getConnection() {
 
         try {
             // Loading the JDBC Driver
             Class.forName("com.mysql.cj.jdbc.Driver");
             connection = DriverManager.getConnection(DB_URL, USER, PASSWORD);
         } catch (ClassNotFoundException | SQLException e) {
-            e.getMessage();
+            System.out.println(e.getMessage());
         }
         return connection;
     }
@@ -57,7 +56,6 @@ public class DBUtils {
             ps.execute();
 
             success = true;
-            System.out.println("Congratulations! The student was successfully enrolled.\n");
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -93,14 +91,14 @@ public class DBUtils {
             rs.last();
             int size = rs.getRow();
 
-            System.out.println("Total Rows: " + size);
+            System.out.println("Total Records: " + size);
 
             // For iteration, move the database cursor before the first record.
             rs.beforeFirst();
 
             if (size == 0) {
                 System.out.println("No Records Found! " +
-                        "Consider adding new students.");
+                                   "Consider adding new students.");
             } else {
                 while (rs.next()) {
                     id = rs.getInt("id");
@@ -122,16 +120,18 @@ public class DBUtils {
         return students;
     }
 
-    public static void deleteStudent(int studentId) {
+    public static boolean deleteStudent(int studentId) {
+        boolean success = false;
         Connection conn = null;
         try {
             conn = DBUtils.getConnection();
             String deleteQuery = "DELETE FROM students WHERE id = " + studentId;
             PreparedStatement ps = conn.prepareStatement(deleteQuery);
-            ps.executeUpdate();
-            System.out.println("Student deleted!\n");
+            if (ps.executeUpdate() > 0) {
+                success = true;
+            }
         } catch (SQLException e) {
-            e.getMessage();
+            System.out.println(e.getMessage());
         } finally {
             if (conn != null) {
                 try {
@@ -141,9 +141,24 @@ public class DBUtils {
                 }
             }
         }
+        return success;
     }
 
-    public static void updateStudentInfo(int studentId) {
+    public static boolean updateStudentInfo(String sqlQuery) {
+        Connection conn;
+        boolean updateFlag = false;
+        PreparedStatement statement;
 
+        try {
+            conn = DBUtils.getConnection();
+            statement = conn.prepareStatement(sqlQuery);
+            statement.executeUpdate();
+            if (statement.executeUpdate() > 0) {
+                updateFlag = true;
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return updateFlag;
     }
 }
