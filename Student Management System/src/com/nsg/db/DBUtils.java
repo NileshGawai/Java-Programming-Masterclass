@@ -19,7 +19,7 @@ public class DBUtils {
 
     private static final String DB_URL = "jdbc:mysql://localhost/student_profiles";
     private static final String USER = "root";
-    private static final String PASSWORD = "mySqlNg_208$";
+    private static final String PASSWORD = "your_password";
 
     /**
      * Gets the MySQL Server database connection.
